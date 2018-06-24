@@ -1,0 +1,54 @@
+use Libraries.Game.Game
+use Libraries.Game.Graphics.Drawable
+use Libraries.Compute.Random
+use Libraries.Sound.Audio
+
+class Main is Game
+Drawable circle
+Random random
+Audio sound
+
+number currentX = 0
+number currentY = 0
+
+    action Main
+        StartGame()
+    end
+
+    action CreateGame
+        circle:LoadFilledCircle(20)
+        circle:SetPosition(currentX, 300)
+        Add(circle)
+
+        sound:Load("/Media/Bing.ogg")
+        sound:EnableLooping()
+    end
+
+    action Update(number seconds)
+        currentX = circle:GetX()
+        currentY = OffsetY(currentX)
+        WrapAtBorder()
+        circle:SetPosition(currentX + 100 * seconds, currentY)
+        Add(circle)
+
+        sound:SetVolume(currentY / 1000)
+        sound:SetBalance(currentX / 1000)
+        sound:Play()
+    end
+
+    action WrapAtBorder
+        if currentX >= 800
+           currentX = 0
+        end
+    end
+
+    action OffsetY(number x_position) returns number
+        number changedY = 0
+        if x_position >= 800
+            changedY = random:RandomIntegerBetween(0, 580)
+        else
+            changedY = currentY
+        end
+        return changedY
+    end
+end
